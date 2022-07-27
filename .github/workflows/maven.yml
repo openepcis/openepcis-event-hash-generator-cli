@@ -123,4 +123,4 @@ jobs:
 
       - name: 'Build Linux Image'
         run: |
-          native-image --no-server --no-fallback -H:ReflectionConfigurationResources=reflection-config.json -H:IncludeResources=logback.xml --allow-incomplete-classpath -jar openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.jar
+          native-image --no-server --no-fallback --allow-incomplete-classpath -jar openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.jar
