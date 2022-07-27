@@ -47,7 +47,7 @@ jobs:
       - name: 'Publish JAR'
         uses: actions/upload-artifact@v3
         with:
-          name: all-jar
+          name: 'openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.jar'
           path: 'target/openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.jar'
       - name: 'Create Release'
         if: contains(github.ref, 'v')
@@ -108,7 +108,7 @@ jobs:
       - name: 'Get JAR Artifact'
         uses: actions/download-artifact@v3
         with:
-          name: all-jar
+          name: 'openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.jar'
 
       - name: 'Download Release URL'
         if: contains(github.ref, 'v')
@@ -121,17 +121,6 @@ jobs:
         run: |
           echo "::set-env name=UPLOAD_URL::$(cat upload_url.txt)"
 
-      - id: build-linux-native
-        name: Build Linux Native
-        env:
-          OPENEPCIS_OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OPENEPCIS_OSSRH_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+      - name: 'Build Linux Image'
         run: |
-          mvn \
-            -s .mvn/settings.xml \
-            --no-transfer-progress \
-            --batch-mode \
-            -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} \
-            -Popenepcis-ossrh \
-            -Pnative \
-            clean package
+          native-image --no-server --no-fallback -H:ReflectionConfigurationResources=reflection-config.json -H:IncludeResources=logback.xml --allow-incomplete-classpath -jar openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.jar
