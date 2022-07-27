@@ -106,11 +106,6 @@ jobs:
         run: |
           echo "::set-env name=VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
 
-
-      - name: 'Build Linux Image'
-          run: |
-            native-image --no-server --no-fallback -H:ReflectionConfigurationResources=reflection-config.json -H:IncludeResources=logback.xml --allow-incomplete-classpath -jar openepcis-event-hash-generator-utility-jar-with-dependencies.jar
-
       - name: 'Download Release URL'
         if: contains(github.ref, 'v')
         uses: actions/download-artifact@v2-preview
