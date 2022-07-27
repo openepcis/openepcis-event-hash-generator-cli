@@ -43,9 +43,9 @@ jobs:
       run: |
         echo "::set-env name=VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
     - name: 'Publish JAR'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
-        name: 'openepcis-event-hash-generator-utility-jar-with-dependencies.jar'
+        name: all-jar
         path: 'target/openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.jar'
     - name: 'Create Release'
       if: contains(github.ref, 'v')
@@ -104,9 +104,9 @@ jobs:
         run: |
           echo "::set-env name=VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
       - name: 'Get JAR Artifact'
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
-          name: 'openepcis-event-hash-generator-utility-jar-with-dependencies.jar'
+          name: all-jar
       - name: 'Build Linux Image'
           run: |
             native-image --no-server --no-fallback -H:ReflectionConfigurationResources=reflection-config.json -H:IncludeResources=logback.xml --allow-incomplete-classpath -jar openepcis-event-hash-generator-utility-jar-with-dependencies.jar
