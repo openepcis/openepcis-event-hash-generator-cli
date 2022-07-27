@@ -42,7 +42,7 @@ jobs:
           clean package
 
   build-linux-image:
-    needs: [build-jar-job]
+    #needs: [build-jar-job]
     name: 'Build Linux Image'
     runs-on: ubuntu-latest
     steps:
