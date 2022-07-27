@@ -27,8 +27,8 @@ jobs:
       run: |
         cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
         gpg --list-secret-keys --keyid-format LONG
-    - id: publish-to-central
-      name: Publish to Central Repository
+    - id: build-jar
+      name: Build JAR
       env:
         OPENEPCIS_OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
         OPENEPCIS_OSSRH_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
@@ -39,5 +39,33 @@ jobs:
           --batch-mode \
           -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} \
           -Popenepcis-ossrh \
-          -Pnative \
           clean package
+
+  build-linux-image:
+    needs: [build-jar-job]
+    name: 'Build Linux Image'
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout from git
+        uses: actions/checkout@v3
+      - name: Set up GraalVM
+        uses: DeLaGuardo/setup-graalvm@2.0
+        with:
+          graalvm-version: '22.1.0.java17'
+      - name: 'Install Native Image Plugin'
+        run: |
+          gu install native-image
+      - id: build-linux-native
+        name: Build Linux Native
+        env:
+          OPENEPCIS_OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OPENEPCIS_OSSRH_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+        run: |
+          mvn \
+            -s .mvn/settings.xml \
+            --no-transfer-progress \
+            --batch-mode \
+            -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} \
+            -Popenepcis-ossrh \
+            -Pnative \
+            clean package
