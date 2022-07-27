@@ -10,36 +10,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: checkout from git
-      uses: actions/checkout@v3
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-    - name: Install gpg secret key
-      run: |
-        cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
-        gpg --list-secret-keys --keyid-format LONG
-    - id: build-jar
-      name: Build JAR
-      env:
-        OPENEPCIS_OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-        OPENEPCIS_OSSRH_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
-      run: |
-        mvn \
-          -s .mvn/settings.xml \
-          --no-transfer-progress \
-          --batch-mode \
-          -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} \
-          -Popenepcis-ossrh \
-          clean package
+ 
 
   build-linux-image:
     #needs: [build-jar-job]
@@ -50,6 +21,8 @@ jobs:
         uses: actions/checkout@v3
       - name: Set up GraalVM
         uses: DeLaGuardo/setup-graalvm@2.0
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         with:
           graalvm-version: '22.1.0.java17'
       - name: 'Install Native Image Plugin'
