@@ -107,6 +107,7 @@ jobs:
         uses: actions/download-artifact@v2-preview
         with:
           name: 'openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.jar'
+          path: 'openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.jar'
       - name: 'Build Linux Image'
           run: |
             native-image --no-server --no-fallback -H:ReflectionConfigurationResources=reflection-config.json -H:IncludeResources=logback.xml --allow-incomplete-classpath -jar openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.jar
