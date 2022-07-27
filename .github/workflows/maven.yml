@@ -75,7 +75,6 @@ jobs:
       if: contains(github.ref, 'v')
       run: |
         echo "${{steps.create_release.outputs.upload_url}}" > upload_url.txt
-
     - name: 'Publish Upload URL'
       if: contains(github.ref, 'v')
       uses: actions/upload-artifact@v2-preview
@@ -99,6 +98,30 @@ jobs:
       - name: 'Install Native Image Plugin'
         run: |
           gu install native-image
+      - name: 'Get Version Number'
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+        run: |
+          echo "::set-env name=VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
+      - name: 'Get JAR Artifact'
+        uses: actions/download-artifact@v2-preview
+        with:
+          name: 'openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.jar'
+      - name: 'Build Linux Image'
+          run: |
+            native-image --no-server --no-fallback -H:ReflectionConfigurationResources=reflection-config.json -H:IncludeResources=logback.xml --allow-incomplete-classpath -jar openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.jar
+
+      - name: 'Download Release URL'
+        if: contains(github.ref, 'v')
+        uses: actions/download-artifact@v2-preview
+        with:
+          name: 'upload_url.txt'
+
+      - name: 'Set Upload URL Env Var'
+        if: contains(github.ref, 'v')
+        run: |
+          echo "::set-env name=UPLOAD_URL::$(cat upload_url.txt)"
+
       - id: build-linux-native
         name: Build Linux Native
         env:
