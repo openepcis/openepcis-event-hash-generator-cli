@@ -11,6 +11,37 @@
 
     <artifactId>openepcis-event-hash-generator-utility</artifactId>
     <name>openepcis-event-hash-generator-utility</name>
+    <description>Command line utility to generate Hash-Ids based on XML/JSON EPCIS document provided.</description>
+    <url>https://github.com/openepcis/openepcis-event-hash-generator-utility</url>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Sven Boeckelmann</name>
+            <email>sven.boeckelmann@benelog.com</email>
+            <organization>benelog GmbH &amp; Co. KG</organization>
+            <organizationUrl>https://www.benelog.com</organizationUrl>
+        </developer>
+        <developer>
+            <name>Aravinda Baliga B</name>
+            <email>aravinda.baliga@benelog.com</email>
+            <organization>benelog GmbH &amp; Co. KG</organization>
+            <organizationUrl>https://www.benelog.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/openepcis/openepcis-event-hash-generator-utility.git</connection>
+        <developerConnection>scm:git:ssh://github.com:openepcis/openepcis-event-hash-generator-utility.git
+        </developerConnection>
+        <url>https://github.com/openepcis/openepcis-event-hash-generator-utility/tree/main</url>
+    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
