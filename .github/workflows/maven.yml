@@ -84,10 +84,18 @@ jobs:
           name: 'upload_url.txt'
           path: 'upload_url.txt'
 
-  build-linux-image:
-    needs: [ build-jar-job ]
-    name: 'Build Linux Image'
-    runs-on: ubuntu-latest
+  build-non-windows-image:
+    name: 'Build Non-Windows Image'
+    needs: [build-jar-job]
+    strategy:
+      matrix:
+        os: ['ubuntu-latest', 'macos-latest']
+        include:
+          - os: 'ubuntu-latest'
+            label: 'linux'
+          - os: 'macos-latest'
+            label: 'mac'
+    runs-on: ${{matrix.os}}
     steps:
       - name: checkout from git
         uses: actions/checkout@v3
@@ -121,6 +129,24 @@ jobs:
         run: |
           echo "::set-env name=UPLOAD_URL::$(cat upload_url.txt)"
 
-      - name: 'Build Linux Image'
+      - name: 'Build Native Image'
         run: |
           native-image --no-server --no-fallback --allow-incomplete-classpath -jar openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.jar
+
+      - name: 'Publish Native Image'
+        if: success()
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: 'openepcis-event-hash-generator-utility-${{env.VERSION}}-${{matrix.label}}'
+          path: 'openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies'
+      - name: 'Release Native Image Asset'
+        if: success() && contains(github.ref, 'v')
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          upload_url: ${{env.UPLOAD_URL}}
+          asset_name: 'openepcis-event-hash-generator-utility-${{env.VERSION}}-${{matrix.label}}'
+          asset_path: 'openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies'
+          asset_content_type: application/octet-stream
