@@ -5,11 +5,8 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "main" ]
     tags:
       - 'v*'
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   build-jar-job:
@@ -50,8 +47,8 @@ jobs:
       - name: 'Publish JAR'
         uses: actions/upload-artifact@v3
         with:
-          name: 'openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.jar'
-          path: 'target/openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.jar'
+          name: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar'
+          path: 'target/openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar'
       - name: 'Create Release'
         if: contains(github.ref, 'v')
         id: create_release
@@ -73,8 +70,8 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{steps.create_release.outputs.upload_url}}
-          asset_path: 'target/openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.jar'
-          asset_name: 'openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.jar'
+          asset_path: 'target/openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar'
+          asset_name: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar'
           asset_content_type: application/java-archive
       - name: 'Write Upload URL To File'
         if: contains(github.ref, 'v')
@@ -119,7 +116,7 @@ jobs:
       - name: 'Get JAR Artifact'
         uses: actions/download-artifact@v3
         with:
-          name: 'openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.jar'
+          name: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar'
 
       - name: 'Download Release URL'
         if: contains(github.ref, 'v')
@@ -138,14 +135,14 @@ jobs:
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         run: |
-          native-image --no-server --no-fallback --allow-incomplete-classpath -jar openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.jar
+          native-image --no-server --no-fallback  --enable-http --enable-https --allow-incomplete-classpath -H:+JNI -H:+UseServiceLoaderFeature -H:ReflectionConfigurationFiles=./src/native/resources/reflect.json -jar openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar
 
       - name: 'Publish Native Image'
         if: success()
         uses: actions/upload-artifact@v3
         with:
-          name: 'openepcis-event-hash-generator-utility-${{env.VERSION}}-${{matrix.label}}'
-          path: 'openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies'
+          name: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-${{matrix.label}}'
+          path: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies'
       - name: 'Release Native Image Asset'
         if: success() && contains(github.ref, 'v')
         id: upload-release-asset
@@ -154,8 +151,8 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{env.UPLOAD_URL}}
-          asset_name: 'openepcis-event-hash-generator-utility-${{env.VERSION}}-${{matrix.label}}'
-          asset_path: 'openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies'
+          asset_name: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-${{matrix.label}}'
+          asset_path: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies'
           asset_content_type: application/octet-stream
 
 
@@ -189,7 +186,7 @@ jobs:
       - name: 'Get JAR Artifact'
         uses: actions/download-artifact@v3
         with:
-          name: 'openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.jar'
+          name: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar'
 
       - name: 'Download Release URL'
         if: contains(github.ref, 'v')
@@ -210,13 +207,13 @@ jobs:
           GRAALVM_HOME: ./graalvm-ce-java17-22.2.0
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
-          ./graalvm-ce-java17-22.2.0/bin/native-image --no-server --no-fallback --allow-incomplete-classpath -jar openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.jar
+          ./graalvm-ce-java17-22.2.0/bin/native-image --no-server --no-fallback --enable-http --enable-https --allow-incomplete-classpath -H:+JNI -H:+UseServiceLoaderFeature -H:ReflectionConfigurationFiles=./src/native/resources/reflect.json  -jar openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.jar
       - name: 'Publish Windows Image'
         if: success()
         uses: actions/upload-artifact@v3
         with:
-          name: 'openepcis-event-hash-generator-utility-${{env.VERSION}}-windows.exe'
-          path: 'openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.exe'
+          name: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-windows.exe'
+          path: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.exe'
       - name: 'Release Windows Image Asset'
         if: success() && contains(github.ref, 'v')
         id: upload-release-asset
@@ -225,6 +222,6 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{env.UPLOAD_URL}}
-          asset_name: 'openepcis-event-hash-generator-utility-${{env.VERSION}}-windows.exe'
-          asset_path: 'openepcis-event-hash-generator-utility-${{env.VERSION}}-jar-with-dependencies.exe'
+          asset_name: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-windows.exe'
+          asset_path: 'openepcis-event-hash-generator-cli-${{env.VERSION}}-jar-with-dependencies.exe'
           asset_content_type: application/octet-stream

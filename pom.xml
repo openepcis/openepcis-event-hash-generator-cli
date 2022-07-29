@@ -113,7 +113,16 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <!-- ... -->
+                            <buildArgs>
+                                <arg>--enable-all-security-services</arg>
+                                <arg>--enable-http</arg>
+                                <arg>--enable-https</arg>
+                                <arg>--report-unsupported-elements-at-runtime</arg>
+                                <arg>--no-server</arg>
+                                <arg>-H:+JNI</arg>
+                                <arg>-H:+UseServiceLoaderFeature</arg>
+                                <arg>-H:ReflectionConfigurationFiles=${project.basedir}/src/native/resources/reflect.json</arg>
+                            </buildArgs>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -140,6 +149,11 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
         </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
+        </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -148,6 +162,13 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.graalvm.nativeimage</groupId>
+            <artifactId>svm</artifactId>
+            <version>22.2.0</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>
