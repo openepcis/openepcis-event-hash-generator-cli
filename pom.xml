@@ -9,9 +9,9 @@
         <version>0.9.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>openepcis-event-hash-generator-utility</artifactId>
-    <name>openepcis-event-hash-generator-utility</name>
-    <description>Command line utility to generate Hash-Ids based on XML/JSON EPCIS document provided.</description>
+    <artifactId>openepcis-event-hash-generator-cli</artifactId>
+    <name>openepcis-event-hash-generator-cli</name>
+    <description>Command line interface to generate Hash-Ids based on XML/JSON EPCIS document provided.</description>
     <url>https://github.com/openepcis/openepcis-event-hash-generator-utility</url>
 
     <licenses>
@@ -37,10 +37,10 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/openepcis/openepcis-event-hash-generator-utility.git</connection>
-        <developerConnection>scm:git:ssh://github.com:openepcis/openepcis-event-hash-generator-utility.git
+        <connection>scm:git:git://github.com/openepcis/openepcis-event-hash-generator-cli.git</connection>
+        <developerConnection>scm:git:ssh://github.com:openepcis/openepcis-event-hash-generator-cli.git
         </developerConnection>
-        <url>https://github.com/openepcis/openepcis-event-hash-generator-utility/tree/main</url>
+        <url>https://github.com/openepcis/openepcis-event-hash-generator-cli/tree/main</url>
     </scm>
 
     <properties>
@@ -141,6 +141,10 @@
             <artifactId>httpclient</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
