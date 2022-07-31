@@ -21,6 +21,8 @@ public class HashGenerator {
   private static final String TYPE_XML = "xml";
   private static final String TYPE_JSON = "json";
   private static final String PREHASH = "prehash";
+  private static final String PREHASHES_SUFFIX = ".prehashes";
+  private static final String HASHES_SUFFIX = ".hashes";
 
   static {
 
@@ -70,7 +72,7 @@ public class HashGenerator {
         "join",
         true,
         "String used to join the pre hash string.\n"
-            + "Defaults to empty string as specified.\nValues like '\\n' might be useful for debugging.");
+            + "Defaults to empty string as specified.\nValues like \"\\n\" might be useful for debugging.");
 
     // ***Parsing Stage***
     // Create a parser
@@ -125,12 +127,15 @@ public class HashGenerator {
         HttpEntity httpEntity = null;
         try (final CloseableHttpClient httpClient = HttpClients.createDefault()) {
           httpEntity = httpClient.execute(new HttpGet(path)).getEntity();
-          final Optional<PrintStream> printStream = createPrintWriter(path, batchMode);
+          final Optional<Map<String, PrintStream>> printStreamMap =
+              createPrintWriterMap(path, batchMode);
           typeDifferentiator(
-              type, httpEntity.getContent(), hashAlgorithms, createConsumer(printStream));
-          if (printStream.isPresent()) {
-            printStream.get().flush();
-            printStream.get().close();
+              type, httpEntity.getContent(), hashAlgorithms, createConsumer(printStreamMap));
+          if (printStreamMap.isPresent()) {
+            for (PrintStream printStream : printStreamMap.get().values()) {
+              printStream.flush();
+              printStream.close();
+            }
           }
         } finally {
           if (httpEntity != null) {
@@ -139,12 +144,15 @@ public class HashGenerator {
         }
       } else {
         for (final File f : locateFiles(path)) {
-          final Optional<PrintStream> printStream = createPrintWriter(f.getPath(), batchMode);
+          final Optional<Map<String, PrintStream>> printStreamMap =
+              createPrintWriterMap(path, batchMode);
           typeDifferentiator(
-              type, new FileInputStream(f), hashAlgorithms, createConsumer(printStream));
-          if (printStream.isPresent()) {
-            printStream.get().flush();
-            printStream.get().close();
+              type, new FileInputStream(f), hashAlgorithms, createConsumer(printStreamMap));
+          if (printStreamMap.isPresent()) {
+            for (PrintStream printStream : printStreamMap.get().values()) {
+              printStream.flush();
+              printStream.close();
+            }
           }
         }
       }
@@ -154,14 +162,22 @@ public class HashGenerator {
     System.exit(0);
   }
 
-  private static Optional<PrintStream> createPrintWriter(final String path, boolean batchMode) {
+  private static Optional<Map<String, PrintStream>> createPrintWriterMap(
+      final String path, boolean batchMode) {
     try {
       if (batchMode) {
-        final File file =
+        final File hashesFile =
             path.matches("^(https?)://.*$")
-                ? new File(path.substring(path.lastIndexOf("/") + 1).concat(".hashes"))
-                : new File(path.concat(".hashes"));
-        return Optional.of(new PrintStream(new FileOutputStream(file)));
+                ? new File(path.substring(path.lastIndexOf("/") + 1).concat(HASHES_SUFFIX))
+                : new File(path.concat(HASHES_SUFFIX));
+        final File prehashesFile =
+            path.matches("^(https?)://.*$")
+                ? new File(path.substring(path.lastIndexOf("/") + 1).concat(PREHASHES_SUFFIX))
+                : new File(path.concat(PREHASHES_SUFFIX));
+        final Map<String, PrintStream> printStreamMap = new HashMap<>();
+        printStreamMap.put(HASHES_SUFFIX, new PrintStream(hashesFile));
+        printStreamMap.put(PREHASHES_SUFFIX, new PrintStream(prehashesFile));
+        return Optional.of(printStreamMap);
       }
     } catch (Exception e) {
       throw new RuntimeException(e);
@@ -170,21 +186,25 @@ public class HashGenerator {
   }
 
   private static Consumer<? super Map<String, String>> createConsumer(
-      final Optional<PrintStream> output) throws RuntimeException {
+      final Optional<Map<String, PrintStream>> output) throws RuntimeException {
 
     return new Consumer<Map<String, String>>() {
       @Override
       public void accept(Map<String, String> map) {
         try {
           if (map.containsKey(PREHASH)) {
-            System.out.println(map.get(PREHASH));
+            if (output.isEmpty()) {
+              System.out.println(map.get(PREHASH));
+            } else {
+              output.get().get(PREHASHES_SUFFIX).println(map.get(PREHASH));
+            }
           }
           for (final Map.Entry<String, String> entry : map.entrySet()) {
             if (!PREHASH.equals(entry.getKey().toLowerCase())) {
               if (output.isEmpty()) {
                 System.out.println(entry.getValue());
               } else {
-                output.get().println(entry.getValue());
+                output.get().get(HASHES_SUFFIX).println(entry.getValue());
               }
             }
           }
