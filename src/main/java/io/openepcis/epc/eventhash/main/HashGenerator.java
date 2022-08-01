@@ -89,7 +89,8 @@ public class HashGenerator {
       // Format all options to display as help section
       final HelpFormatter formatter = new HelpFormatter();
       formatter.printHelp(
-          "OpenEPCIS Event Hash Generator Utility: [options] file.. url.. ", options);
+          "OpenEPCIS Event Hash Generator Utility: [options] file.. url.., - to read from stdin ",
+          options);
       System.exit(1);
     } else if (cmd.getArgList().isEmpty()) {
       // Check if either of the p or i option is present if not then terminate the application.
@@ -115,43 +116,53 @@ public class HashGenerator {
       EventHashGenerator.prehashJoin(preHashJoin);
     }
 
-    // ***Interrogation Stage***
-    for (final String path : cmd.getArgs()) {
-      if (!cmd.hasOption("e")) {
-        if (path.toLowerCase().endsWith(".xml")) {
-          type = TYPE_XML;
-        }
+    // check if read from stdin is requested
+    if (cmd.getArgs().length == 1 && "-".equals(cmd.getArgs()[0])) {
+      if (batchMode) {
+        System.out.println("batch mode not supported when reading from stdin");
+        System.exit(1);
       }
-      // Check if the path contains the http/https if so then make remote request call
-      if (path.matches("^(https?)://.*$")) {
-        HttpEntity httpEntity = null;
-        try (final CloseableHttpClient httpClient = HttpClients.createDefault()) {
-          httpEntity = httpClient.execute(new HttpGet(path)).getEntity();
-          final Optional<Map<String, PrintStream>> printStreamMap =
-              createPrintWriterMap(path, batchMode);
-          typeDifferentiator(
-              type, httpEntity.getContent(), hashAlgorithms, createConsumer(printStreamMap));
-          if (printStreamMap.isPresent()) {
-            for (PrintStream printStream : printStreamMap.get().values()) {
-              printStream.flush();
-              printStream.close();
+      typeDifferentiator(type, System.in, hashAlgorithms, createConsumer(Optional.empty()));
+
+    } else {
+      // ***Interrogation Stage***
+      for (final String path : cmd.getArgs()) {
+        if (!cmd.hasOption("e")) {
+          if (path.toLowerCase().endsWith(".xml")) {
+            type = TYPE_XML;
+          }
+        }
+        // Check if the path contains the http/https if so then make remote request call
+        if (path.matches("^(https?)://.*$")) {
+          HttpEntity httpEntity = null;
+          try (final CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            httpEntity = httpClient.execute(new HttpGet(path)).getEntity();
+            final Optional<Map<String, PrintStream>> printStreamMap =
+                createPrintWriterMap(path, batchMode);
+            typeDifferentiator(
+                type, httpEntity.getContent(), hashAlgorithms, createConsumer(printStreamMap));
+            if (printStreamMap.isPresent()) {
+              for (PrintStream printStream : printStreamMap.get().values()) {
+                printStream.flush();
+                printStream.close();
+              }
+            }
+          } finally {
+            if (httpEntity != null) {
+              EntityUtils.consumeQuietly(httpEntity);
             }
           }
-        } finally {
-          if (httpEntity != null) {
-            EntityUtils.consumeQuietly(httpEntity);
-          }
-        }
-      } else {
-        for (final File f : locateFiles(path)) {
-          final Optional<Map<String, PrintStream>> printStreamMap =
-              createPrintWriterMap(path, batchMode);
-          typeDifferentiator(
-              type, new FileInputStream(f), hashAlgorithms, createConsumer(printStreamMap));
-          if (printStreamMap.isPresent()) {
-            for (PrintStream printStream : printStreamMap.get().values()) {
-              printStream.flush();
-              printStream.close();
+        } else {
+          for (final File f : locateFiles(path)) {
+            final Optional<Map<String, PrintStream>> printStreamMap =
+                createPrintWriterMap(path, batchMode);
+            typeDifferentiator(
+                type, new FileInputStream(f), hashAlgorithms, createConsumer(printStreamMap));
+            if (printStreamMap.isPresent()) {
+              for (PrintStream printStream : printStreamMap.get().values()) {
+                printStream.flush();
+                printStream.close();
+              }
             }
           }
         }
