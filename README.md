@@ -41,12 +41,12 @@ There is no need to compile this project by yourself, we are providing release b
 | name | description |
 |----------|-----------|
 |openepcis-event-hash-generator-cli-${VERSION}-jar-with-dependencies.jar|Java runnable JAR File. Use this file if you already have Java 17 Runtime Environment installed on your system|
-|openepcis-event-hash-generator-cli-${VERSION}-linux|linux binary [amd64]|
-|openepcis-event-hash-generator-cli-${VERSION}-windows| windows binary [amd64]|
-|openepcis-event-hash-generator-cli-${VERSION}-mac|Intel MacOS binary|
+|openepcis-event-hash-generator-cli-${VERSION}-linux|Linux binary executable [amd64]|
+|openepcis-event-hash-generator-cli-${VERSION}-windows| Windows binary executable [amd64]|
+|openepcis-event-hash-generator-cli-${VERSION}-mac|MacOS Intel binary executable|
 
-We do not provide binaries for any arm-based platforms yet, but that might change in the near future. 
-If you need to run it on any other OS, please download and install a Java 17 Runtime Environment that is suitable for your environment and execute it using the appropriate JVM for your platform.  
+We do not provide binaries for any arm-based platforms yet,     but that might change in the near future. 
+If you need to run it on any other OS, please download and install a Java 17 Runtime Environment that is suitable for your environment and execute the runnable jar using the appropriate JVM for your platform.  
 
 ### Example commands:
 
