@@ -11,7 +11,7 @@ This command line tool generates the Hash Ids for EPCIS documents in JSON/XML fo
 By requiring only a few simple command-line inputs, this utility simplifies it for users to produce Hash Ids for EPCIS documents. It accepts numerous arguments and performs various operations.
 
 
-### Accepted Parameters:
+### Parameters:
 
 The program accepts a number of parameters that are supplied using the simple alphabet. The different acceptable parameters and their values are listed below:
 
@@ -29,50 +29,71 @@ corresponding Hash-ids will be written into two separate files.
 
 `-j`: denotes the "join". It's easy to beautify the pre-hash string by indicating whether to attach a certain string to the pre-hash. It could be simpler to discern between distinct properties in a pre-hash text to troubleshoot problems If you add a new line (\n) or a tab character (\t). By default, no additional characters are added to the pre-hash string.
 
+### Releases:
+It is crucial to make sure that every released application operates across various platforms, hence cross-platform assets have been made available for the project. Users can 
+download 
+the relevant assets based on their environment or operating system. Release assets can be found at the following link: 
+https://github.com/openepcis/openepcis-event-hash-generator-cli/releases
 
-### Usage:
 
-After cloning the application/GitHub repositories to the local system run the following command:
-```
-mvn clean install
-```
-The above command will create the JAR (Java ARchive) of the application in the root/target folder, It is a file format for packages that are frequently used to group together a lot of Java class files and related information.
 
-The general command that may be used to create hash IDs for the EPCIS document located within the remote URL is as follows:
-```
-java -jar path-of-jar-file/name-of-jar-file -a hash-algorithm-type url-for-epcis-document
-```
+JAR is an acronym for Java ARchive. It is a file format for combining many files into one that is based on the well-known ZIP file format. Java ARchive of the project is 
+available as: `openepcis-event-hash-generator-cli-0.9.1-SNAPSHOT-jar-with-dependencies.jar`. To run the application using the JAR file, Java environment has to be installed and 
+available in the local system else Native binaries can be used.
+
+Native binaries refer to software that has been specifically built for the hardware platform it will use. The term "native binary" refers to a Windows software created only for Windows. 3 different native binaries of the project has been developed which is available for MacOS, Windows and Linux. Native binaries don't need any additional program or library installations.
 
 ### Example commands:
+
+Download the corresponding binaries from the releases link above. Navigate to the folder containing the binary using the terminal or command prompt. The general command that may be used to create hash IDs for the EPCIS document located within the remote URL is as follows:
+```
+path-of-binary-file/name-of-binary-file -a hash-algorithm-type url-for-epcis-document
+```
+
+Note: 
+* The following commands are based on the MacOS native library, however other OS commands work similarly. 
+* If security concerns prevent you from opening the binary file, you might need to provide some access privileges in order to run the program.
+
 1. To access every help command available in the tool, use the command below:
 ```
-java -jar target/openepcis-event-hash-generator-cli-0.9.1-SNAPSHOT-jar-with-dependencies.jar -h
+./openepcis-event-hash-generator-cli-0.9.1-SNAPSHOT-mac -h
 ```
 
 2. The following command will only construct hash-ids for the EPCIS document in the remote URL:
 ```
-java -jar target/openepcis-event-hash-generator-cli-0.9.1-SNAPSHOT-jar-with-dependencies.jar  -e XML -a sha1-224 https://raw.githubusercontent.com/gs1/EPCIS/master/XML/AssociationEvent/AssociationEventExamples.xml
+./openepcis-event-hash-generator-cli-0.9.1-SNAPSHOT-mac  -e XML -a sha1-224 https://raw.githubusercontent.
+com/gs1/EPCIS/master/XML/AssociationEvent/AssociationEventExamples.xml
 ```
 
 3. The following command will generate remote URL hash-ids for EPCIS documents and display the pre-hash string:
 ```
-java -jar target/openepcis-event-hash-generator-cli-0.9.1-SNAPSHOT-jar-with-dependencies.jar -e XML -a sha3-512 -p https://raw.githubusercontent.com/gs1/EPCIS/master/XML/AssociationEvent/AssociationEventExamples.xml
+./openepcis-event-hash-generator-cli-0.9.1-SNAPSHOT-mac -e XML -a sha3-512 -p https://raw.githubusercontent.
+com/gs1/EPCIS/master/XML/AssociationEvent/AssociationEventExamples.xml
 ```
 
 4. The following command will generate hash IDs for EPCIS documents at a remote URL and write the hash IDs and pre-hash strings to a file:
 ```
-java -jar target/openepcis-event-hash-generator-cli-0.9.1-SNAPSHOT-jar-with-dependencies.jar -e XML -a sha3-512 -b https://raw.githubusercontent.com/gs1/EPCIS/master/XML/AssociationEvent/AssociationEventExamples.xml
+./openepcis-event-hash-generator-cli-0.9.1-SNAPSHOT-mac -e XML -a sha3-512 -b https://raw.githubusercontent.
+com/gs1/EPCIS/master/XML/AssociationEvent/AssociationEventExamples.xml
 ```
 
 5. The following command will create hash ids for remote EPCIS documents and will also append a new line character to a pre-hash text:
  ```
-java -jar target/openepcis-event-hash-generator-cli-0.9.1-SNAPSHOT-jar-with-dependencies.jar -e XML -a md2 -p -j \\n https://raw.githubusercontent.com/gs1/EPCIS/master/XML/AssociationEvent/AssociationEventExamples.xml
+./openepcis-event-hash-generator-cli-0.9.1-SNAPSHOT-mac -e XML -a md2 -p -j \\n https://raw.githubusercontent.
+com/gs1/EPCIS/master/XML/AssociationEvent/AssociationEventExamples.xml
 ```
 
 6. Create hash IDs for EPCIS documents in the local directory using the following command, and add a new line character to the pre-hash string:
 ```
-java -jar target/openepcis-event-hash-generator-cli-0.9.1-SNAPSHOT-jar-with-dependencies.jar -e JSON -a sha3-384 -p -j \\n /Users/aravinda.baligab/GitHub/openepcis-event-hash-generator-cli/jsonFile.json
+./openepcis-event-hash-generator-cli-0.9.1-SNAPSHOT-mac -e JSON -a sha3-384 -p -j \\n /Users/aravinda.
+baligab/GitHub/openepcis-event-hash-generator-cli/jsonFile.json
 ```
+
+7. Create hash Ids by providing EPCIS document as text:
+```
+./openepcis-event-hash-generator-cli-0.9.1-SNAPSHOT-mac -e XML -
+```
+press enter and then paste the EPCIS document.
 
 ### References:
 1. For more information on the Event Hash Generator, please refer to following GitHub repository:
