@@ -29,25 +29,30 @@ corresponding Hash-ids will be written into two separate files.
 
 `-j`: denotes the "join". It's easy to beautify the pre-hash string by indicating whether to attach a certain string to the pre-hash. It could be simpler to discern between distinct properties in a pre-hash text to troubleshoot problems If you add a new line (\n) or a tab character (\t). By default, no additional characters are added to the pre-hash string.
 
+### Runtime Requirements:
+
+The java sources are using some of the latest java language improvements that are only support by recent Java Runtime Environments. The java jar-file which is provided which each release was compiled using Java 17, which means to run and execute it you also need to have Java 17 runtime environment installed on your local machine.  
+
 ### Releases:
-It is crucial to make sure that every released application operates across various platforms, hence cross-platform assets have been made available for the project. Users can 
-download 
-the relevant assets based on their environment or operating system. Release assets can be found at the following link: 
-https://github.com/openepcis/openepcis-event-hash-generator-cli/releases
+There is no need to compile this project by yourself, we are providing release build assets, which can be found at the following link: 
+[https://github.com/openepcis/openepcis-event-hash-generator-cli/releases]([https://github.com/openepcis/openepcis-event-hash-generator-cli/releases])
 
+#### Assets:
+| name | description |
+|----------|-----------|
+|openepcis-event-hash-generator-cli-${VERSION}-jar-with-dependencies.jar|Java runnable JAR File. Use this file if you already have Java 17 Runtime Environment installed on your system|
+|openepcis-event-hash-generator-cli-${VERSION}-linux|linux binary [amd64]|
+|openepcis-event-hash-generator-cli-${VERSION}-windows| windows binary [amd64]|
+|openepcis-event-hash-generator-cli-${VERSION}-mac|Intel MacOS binary|
 
-
-JAR is an acronym for Java ARchive. It is a file format for combining many files into one that is based on the well-known ZIP file format. Java ARchive of the project is 
-available as: `openepcis-event-hash-generator-cli-0.9.1-SNAPSHOT-jar-with-dependencies.jar`. To run the application using the JAR file, Java environment has to be installed and 
-available in the local system else Native binaries can be used.
-
-Native binaries refer to software that has been specifically built for the hardware platform it will use. The term "native binary" refers to a Windows software created only for Windows. 3 different native binaries of the project has been developed which is available for MacOS, Windows and Linux. Native binaries don't need any additional program or library installations.
+We do not provide binaries for any arm-based platforms yet, but that might change in the near future. 
+If you need to run it on any other OS, please download and install a Java 17 Runtime Environment that is suitable for your environment and execute it using the appropriate JVM for your platform.  
 
 ### Example commands:
 
-Download the corresponding binaries from the releases link above. Navigate to the folder containing the binary using the terminal or command prompt. The general command that may be used to create hash IDs for the EPCIS document located within the remote URL is as follows:
+If you have Java 17 Runtime EnvironmentDownload the corresponding binaries from the releases link above. Navigate to the folder containing the binary using the terminal or command prompt. The general command that may be used to create hash IDs for the EPCIS document located within the remote URL is as follows:
 ```
-path-of-binary-file/name-of-binary-file -a hash-algorithm-type url-for-epcis-document
+./openepcis-event-hash-generator-cli-${VERSION}-[linux|windows|mac] -a hash-algorithm-type url-for-epcis-document
 ```
 
 Note: 
@@ -94,6 +99,25 @@ baligab/GitHub/openepcis-event-hash-generator-cli/jsonFile.json
 ./openepcis-event-hash-generator-cli-0.9.1-SNAPSHOT-mac -e XML -
 ```
 press enter and then paste the EPCIS document.
+
+### Building From Source:
+
+You need to have at least Apache Maven Version 3.8 installed on your system to run the build.
+The following commands must be executed from within the project root folder.
+
+1. build and install maven artefacts
+```
+mvn clean install
+```
+
+2. To build a native executable, [GraalVM](https://www.graalvm.org/) is required 
+
+build native executable
+```
+export JAVA_HOME=/path-to-graalvm-java17
+export GRAALVM_HOME=/path-to-graalvm-java17
+mvn clean package -Pnative
+```
 
 ### References:
 1. For more information on the Event Hash Generator, please refer to following GitHub repository:
